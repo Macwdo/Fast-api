@@ -66,7 +66,7 @@ async def view_api(id: int):
 @api.patch("/api/{id}")
 async def update_api(id: int, data: Livros_PATCH):
     dbcursor.execute(f"SELECT * FROM Livros WHERE id = {id}")
-    dados =  dbcursor.fetchone()
+    dados = dbcursor.fetchone()
     if dados == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if data.titulo and data.autor:
@@ -88,11 +88,11 @@ async def update_api(id: int, data: Livros_PATCH):
     }
     
 @api.delete("/api/{id}")
-async def update_api(id: int):
+async def delete_api(id: int):
     dbcursor.execute(f"SELECT * FROM Livros WHERE id = {id}")
     dados =  dbcursor.fetchone()
     if dados == None:
-        raise HTTPException(404,detail="Não encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     dbcursor.execute(f"DELETE FROM Livros WHERE id = {id}")
     con.commit()
     raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
