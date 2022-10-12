@@ -11,8 +11,8 @@ dbcursor = con.cursor()
 class Livros_POST(BaseModel):
     titulo: str
     autor: str
-    
-    
+
+
 class Livros_PATCH(BaseModel):
     titulo: Optional[str]
     autor: Optional[str]
@@ -48,29 +48,35 @@ async def post_api(dados: Livros_POST):
         "titulo": resultado[1],
         "autor": resultado[2]
     }
-        
-    
+
+
 @api.get("/api/{id}")
 async def view_api(id: int):
     dbcursor.execute(f"SELECT id, titulo, autor FROM Livros WHERE id={id}")
     dados = dbcursor.fetchone()
-    if dados == None:
+    if dados is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return {
-        'id':dados[0],
-        'titulo':dados[1],
-        'autor':dados[2]
+        'id': dados[0],
+        'titulo': dados[1],
+        'autor': dados[2]
         }
-    
-    
+
+
 @api.patch("/api/{id}")
 async def update_api(id: int, data: Livros_PATCH):
     dbcursor.execute(f"SELECT * FROM Livros WHERE id = {id}")
     dados = dbcursor.fetchone()
-    if dados == None:
+    if dados is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if data.titulo and data.autor:
-        query = f"UPDATE Livros SET autor = '{data.autor}',titulo = '{data.titulo}' WHERE id = {id}"
+        query = f'''
+        UPDATE Livros
+        SET autor = '{data.autor}'
+        ,titulo = '{data.titulo}'
+        WHERE id = {id}
+        '''
+
     elif data.autor:
         query = f"UPDATE Livros SET autor = '{data.autor}' WHERE id = {id}"
     elif data.titulo:
@@ -86,12 +92,13 @@ async def update_api(id: int, data: Livros_PATCH):
         "titulo": resultado[1],
         "autor": resultado[2]
     }
-    
+
+
 @api.delete("/api/{id}")
 async def delete_api(id: int):
     dbcursor.execute(f"SELECT * FROM Livros WHERE id = {id}")
-    dados =  dbcursor.fetchone()
-    if dados == None:
+    dados = dbcursor.fetchone()
+    if dados is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     dbcursor.execute(f"DELETE FROM Livros WHERE id = {id}")
     con.commit()
